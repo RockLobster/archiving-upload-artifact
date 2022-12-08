@@ -92,7 +92,6 @@ jobs:
       working-directory: check
     - name: Check Archive contents
       run: |
-        unzip *.rTmpArchive.zip -d ./tmp
+        unzip *.rTmpArchive.zip -d check/tmp
 
-        diff __testFiles__ tmp
-      working-directory: check
+        diff __testFiles__ check/tmp
