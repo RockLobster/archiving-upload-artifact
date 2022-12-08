@@ -25,27 +25,29 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Archive Build Artifacts
-      id: archive-artifacts
-      run: |
-        #TODO: Check if files exist
-
-        # It is possible to call this action multiple times.
-        # Ideally we want to store the files from all the calls, not overwrite them.
-        # Therefore, the archive can't have a fixed name.
-        RANDOM_ELEMENT=$(cat /dev/urandom | env LC_ALL=C tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
-        ZIP_NAME="${RANDOM_ELEMENT}.rTmpArchive.zip"
-
-        echo "zip_name=$ZIP_NAME" >> $GITHUB_OUTPUT
-
-        echo $LIB_SOURCE_PATHS | while IFS= read -r SOURCE_PATH
-        do
-          zip -r "$ZIP_NAME" $SOURCE_PATH
-        done
+    - run: echo 'Hello'
       shell: bash
-    - name: Upload Archive
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ inputs.name }}
-        retention-days: ${{ inputs.retention-days }}
-        path: ${{ steps.archive-artifacts.outputs.zip_name }}
+    # - name: Archive Build Artifacts
+    #   id: archive-artifacts
+    #   run: |
+    #     #TODO: Check if files exist
+
+    #     # It is possible to call this action multiple times.
+    #     # Ideally we want to store the files from all the calls, not overwrite them.
+    #     # Therefore, the archive can't have a fixed name.
+    #     RANDOM_ELEMENT=$(cat /dev/urandom | env LC_ALL=C tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+    #     ZIP_NAME="${RANDOM_ELEMENT}.rTmpArchive.zip"
+
+    #     echo "zip_name=$ZIP_NAME" >> $GITHUB_OUTPUT
+
+    #     echo $LIB_SOURCE_PATHS | while IFS= read -r SOURCE_PATH
+    #     do
+    #       zip -r "$ZIP_NAME" $SOURCE_PATH
+    #     done
+    #   shell: bash
+    # - name: Upload Archive
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: ${{ inputs.name }}
+    #     retention-days: ${{ inputs.retention-days }}
+    #     path: ${{ steps.archive-artifacts.outputs.zip_name }}
