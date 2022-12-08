@@ -93,7 +93,7 @@ jobs:
         fi
 
   test-multiple-uploads-same-name:
-    name: Multiple Uploads Test
+    name: Multiple Uploads With The Same Name
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -125,7 +125,7 @@ jobs:
       working-directory: check
 
   test-multiple-uploads-different-name:
-    name: Multiple Uploads Test
+    name: Multiple Uploads With Different Names
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
