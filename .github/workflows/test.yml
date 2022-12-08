@@ -69,7 +69,9 @@ jobs:
         do
           FULL_PATH=check/tmp/$PATH
           echo "Checking if file exists: $FULL_PATH"
-          if [ ! -f "$FULL_PATH" ]; then
+          if [ -f "$FULL_PATH" ]; then
+            echo "File exists."
+          else
             echo "Missing file in archive: $FULL_PATH"
             exit 1
           fi
