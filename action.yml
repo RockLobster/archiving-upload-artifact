@@ -36,10 +36,14 @@ runs:
         echo "zip_name=$ZIP_NAME" >> $GITHUB_OUTPUT
       shell: bash
     - name: Archive Build Artifacts
-      uses: TheDoctor0/zip-release@0.6.2
-      with:
-        filename: ${{ steps.generate-name.outputs.zip_name }}
-        path: ${{ inputs.path }}
+      run: |
+        ACTION_INPUT_PATHS="${{ inputs.path }}"
+        
+        echo $ACTION_INPUT_PATHS | while IFS= read -r ACTION_INPUT_PATH
+        do
+          zip -r "${{ steps.generate-name.outputs.zip_name }}" $ACTION_INPUT_PATH
+        done
+      shell: bash
     - name: Upload Archive
       uses: actions/upload-artifact@v3
       with:
