@@ -94,7 +94,7 @@ jobs:
     - name: Download comparison
       uses: actions/download-artifact@v3
       with:
-        name: comparison-single-${{ matrix.runs-on }}
+        name: comparison-multiple-${{ matrix.runs-on }}
         path: check/comparison
     - name: Check Archive contents
       run: |
