@@ -65,7 +65,8 @@ jobs:
         EXPANDED_PATHS="${{ matrix.config.expanded_paths }}"
         
         PATH_COUNT=0
-        echo "$EXPANDED_PATHS" | while IFS= read -r PATH
+        
+        while IFS= read -r PATH
         do
           if [ -z "$PATH" ]; then
             continue
@@ -79,8 +80,9 @@ jobs:
             echo "Missing file in archive: $FULL_PATH"
             exit 1
           fi
-          PATH_COUNT=$(($PATH_COUNT + 1))
-        done
+          $((++PATH_COUNT)) || true
+        done <<< "$EXPANDED_PATHS"
+
         echo "Done checking files."
 
         unzipped_file_count=$(find check/tmp -type f | wc -l)
