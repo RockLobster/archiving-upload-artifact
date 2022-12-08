@@ -62,7 +62,7 @@ jobs:
       run: |
         unzip *.rTmpArchive.zip -d check/tmp
 
-        EXPANDED_PATHS="${{ inputs.path }}"
+        EXPANDED_PATHS="${{ matrix.config.expanded_paths }}"
         
         PATH_COUNT=0
         echo $EXPANDED_PATHS | while IFS= read -r PATH
