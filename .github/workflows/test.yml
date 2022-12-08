@@ -21,12 +21,13 @@ jobs:
     - name: Upload
       uses: ./
       with:
-        name: Single-File-${{ matrix.runs-on }}
+        name: "Single-File-${{ matrix.runs-on }}"
         path: DirA/SubDirA/FileAA.md
+        retention-days: 1
     - name: Download Archive
       uses: actions/download-artifact@v3
       with:
-        name: Single-File-${{ matrix.runs-on }}
+        name: "Single-File-${{ matrix.runs-on }}"
         path: check
     - name: Check Archive Exists
       run: |
