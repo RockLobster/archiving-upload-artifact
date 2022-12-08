@@ -9,7 +9,7 @@ on:
 
 jobs:
   single-file-upload:
-    name: Upload
+    name: Single File Upload Test
     strategy:
       matrix:
         runs-on: [ubuntu-latest, macos-latest]
@@ -24,6 +24,13 @@ jobs:
         name: "Single-File-${{ matrix.runs-on }}"
         path: __testFiles__/DirA/SubDirA/FileAA.md
         retention-days: 1
+    - name: Upload Comparison
+      uses: actions/upload-artifact@v3
+      with:
+        name: Comparison
+        retention-days: 1
+        path: __testFiles__/DirA/SubDirA/FileAA.md
+        if-no-files-found: error
     - name: Download Archive
       uses: actions/download-artifact@v3
       with:
@@ -46,5 +53,3 @@ jobs:
           exit 1
         fi
       working-directory: check
-
-     
