@@ -15,12 +15,24 @@ jobs:
         config:
           - name: Single
             path: __testFiles__/DirA/SubDirA/FileAA.md
+            expanded_paths: __testFiles__/DirA/SubDirA/FileAA.md
           - name: Multiple
             path: __testFiles__/**
+            expanded_paths: |
+              __testFiles__/DirA/SubDirA/FileAA.md
+              __testFiles__/DirA/SubDirB/FileAB.md
+              __testFiles__/DirA/FileA.md
+              __testFiles__/DirB/FileB.md
+              __testFiles__/Foo
           - name: Multiple2
             path: |
               __testFiles__/DirA
               __testFiles__/DirB/**
+            expanded_paths: |
+              __testFiles__/DirA/SubDirA/FileAA.md
+              __testFiles__/DirA/SubDirB/FileAB.md
+              __testFiles__/DirA/FileA.md
+
       fail-fast: false
     name: ${{ matrix.config.name }} File Upload Test [${{ matrix.runs-on }}]
     runs-on: ${{ matrix.runs-on }}
@@ -33,13 +45,6 @@ jobs:
         name: ${{ matrix.config.name }}-${{ matrix.runs-on }}
         path: ${{ matrix.config.path }}
         retention-days: 1
-    - name: Upload Comparison
-      uses: actions/upload-artifact@v3
-      with:
-        name: comparison-${{ matrix.config.name }}-${{ matrix.runs-on }}
-        retention-days: 1
-        path: ${{ matrix.config.path }}
-        if-no-files-found: error
     - name: Download Archive
       uses: actions/download-artifact@v3
       with:
@@ -53,13 +58,24 @@ jobs:
           exit 1
         fi
       working-directory: check
-    - name: Download comparison
-      uses: actions/download-artifact@v3
-      with:
-        name: comparison-${{ matrix.config.name }}-${{ matrix.runs-on }}
-        path: check/comparison
     - name: Check Archive contents
       run: |
         unzip *.rTmpArchive.zip -d check/tmp
 
-        diff -r check/comparison check/tmp
+        EXPANDED_PATHS="${{ inputs.path }}"
+        
+        PATH_COUNT=0
+        echo $EXPANDED_PATHS | while IFS= read -r PATH
+        do
+          FULL_PATH=check/tmp/$PATH
+          if [ ! -f "$FULL_PATH" ]; then
+            echo "Missing file in archive: $FULL_PATH"
+            exit 1
+          fi
+          ((PATH_COUNT++))
+        done
+
+        unzipped_file_count=$(find check/tmp -type f | wc -l)
+        if [ ! "$unzipped_file_count" -eq "$PATH_COUNT" ]; then
+          echo "Encountered more files than expected; expected: [$PATH_COUNT], actual: [$unzipped_file_count]";
+        fi
