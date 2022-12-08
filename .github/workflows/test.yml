@@ -18,7 +18,7 @@ jobs:
           - name: Multiple
             path: __testFiles__/**
       fail-fast: false
-    name: ${{ matrix.config.name }} File Upload Test
+    name: ${{ matrix.config.name }} File Upload Test [${{ matrix.runs-on }}]
     runs-on: ${{ matrix.runs-on }}
     steps:
     - name: Checkout
