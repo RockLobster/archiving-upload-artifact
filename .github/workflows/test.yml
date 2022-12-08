@@ -1,0 +1,170 @@
+name: Test
+on:
+  push:
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  test-single-upload:
+    strategy:
+      matrix:
+        runs-on: [ubuntu-latest, macos-latest]
+        config:
+          - name: Single
+            path: __testFiles__/DirA/SubDirA/FileAA.md
+            expanded_paths: __testFiles__/DirA/SubDirA/FileAA.md
+          - name: Multiple
+            path: __testFiles__/**
+            expanded_paths: |
+              __testFiles__/DirA/SubDirA/FileAA.md
+              __testFiles__/DirA/SubDirB/FileAB.md
+              __testFiles__/DirA/FileA.md
+              __testFiles__/DirB/FileB.md
+              __testFiles__/Foo
+          - name: Multiple2
+            path: |
+              __testFiles__/DirA
+              __testFiles__/DirB/**
+            expanded_paths: |
+              __testFiles__/DirA/SubDirA/FileAA.md
+              __testFiles__/DirA/SubDirB/FileAB.md
+              __testFiles__/DirA/FileA.md
+              __testFiles__/DirB/FileB.md
+
+      fail-fast: false
+    name: ${{ matrix.config.name }} File Upload Test [${{ matrix.runs-on }}]
+    runs-on: ${{ matrix.runs-on }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.5.0
+    - name: Upload
+      uses: ./
+      with:
+        name: ${{ matrix.config.name }}-${{ matrix.runs-on }}
+        path: ${{ matrix.config.path }}
+        retention-days: 1
+    - name: Download Archive
+      uses: actions/download-artifact@v3
+      with:
+        name: ${{ matrix.config.name }}-${{ matrix.runs-on }}
+        path: check
+    - name: Check Archive Exists
+      run: |
+        count=$(ls -1 *.rTmpArchive.zip 2>/dev/null | wc -l)
+        if [ $count != 1 ]; then
+          echo "Missing archive file!"
+          exit 1
+        fi
+      working-directory: check
+    - name: Check Archive contents
+      run: |
+        unzip *.rTmpArchive.zip -d check/tmp
+
+        EXPANDED_PATHS="${{ matrix.config.expanded_paths }}"
+        
+        PATH_COUNT=0
+        
+        while IFS= read -r EXPANDED_PATH
+        do
+          if [ -z "$EXPANDED_PATH" ]; then
+            continue
+          fi
+
+          FULL_PATH=check/tmp/$EXPANDED_PATH
+          echo "Checking if file exists: $FULL_PATH"
+          if [ -f "$FULL_PATH" ]; then
+            echo "File exists."
+          else
+            echo "Missing file in archive: $FULL_PATH"
+            exit 1
+          fi
+          PATH_COUNT=$(($PATH_COUNT + 1))
+        done <<< "$EXPANDED_PATHS"
+
+        echo "Done checking files."
+
+        unzipped_file_count=$(find check/tmp -type f | wc -l)
+        if [ ! "$unzipped_file_count" -eq "$PATH_COUNT" ]; then
+          echo "Encountered more files than expected; expected: [$PATH_COUNT], actual: [$unzipped_file_count]";
+          exit 1
+        fi
+
+  test-multiple-uploads-same-name:
+    name: Multiple Uploads With The Same Name
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.5.0
+    - name: Upload 1
+      uses: ./
+      with:
+        name: multiple-uploads-same-name
+        path: __testFiles__/DirA/*
+        retention-days: 1
+    - name: Upload 2
+      uses: ./
+      with:
+        name: multiple-uploads-same-name
+        path: __testFiles__/DirB/*
+        retention-days: 1
+    - name: Download Archive
+      uses: actions/download-artifact@v3
+      with:
+        name: multiple-uploads-same-name
+        path: check
+    - name: Check Archive Exists
+      run: |
+        count=$(ls -1 *.rTmpArchive.zip 2>/dev/null | wc -l)
+        if [ $count != 2 ]; then
+          echo "Expected 2 archive files but got: [$count]!"
+          exit 1
+        fi
+      working-directory: check
+
+  test-multiple-uploads-different-name:
+    name: Multiple Uploads With Different Names
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.5.0
+    - name: Upload 1
+      uses: ./
+      with:
+        name: multiple-uploads-different-name-1
+        path: __testFiles__/DirA/*
+        retention-days: 1
+    - name: Upload 2
+      uses: ./
+      with:
+        name: multiple-uploads-different-name-2
+        path: __testFiles__/DirB/*
+        retention-days: 1
+    - name: Download Archive 1
+      uses: actions/download-artifact@v3
+      with:
+        name: multiple-uploads-different-name-1
+        path: check1
+    - name: Download Archive 2
+      uses: actions/download-artifact@v3
+      with:
+        name: multiple-uploads-different-name-2
+        path: check2
+    - name: Check Archive 1 Exists
+      run: |
+        count=$(ls -1 *.rTmpArchive.zip 2>/dev/null | wc -l)
+        if [ $count != 1 ]; then
+          echo "Missing archive file!"
+          exit 1
+        fi
+      working-directory: check1
+    - name: Check Archive 2 Exists
+      run: |
+        count=$(ls -1 *.rTmpArchive.zip 2>/dev/null | wc -l)
+        if [ $count != 1 ]; then
+          echo "Missing archive file!"
+          exit 1
+        fi
+      working-directory: check2
