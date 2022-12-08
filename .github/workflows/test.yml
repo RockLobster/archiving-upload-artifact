@@ -66,13 +66,13 @@ jobs:
         
         PATH_COUNT=0
         
-        while read -r PATH
+        while IFS= read -r EXPANDED_PATH
         do
-          if [ -z "$PATH" ]; then
+          if [ -z "$EXPANDED_PATH" ]; then
             continue
           fi
 
-          FULL_PATH=check/tmp/$PATH
+          FULL_PATH=check/tmp/$EXPANDED_PATH
           echo "Checking if file exists: $FULL_PATH"
           if [ -f "$FULL_PATH" ]; then
             echo "File exists."
