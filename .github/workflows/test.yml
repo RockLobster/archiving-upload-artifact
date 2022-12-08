@@ -17,6 +17,10 @@ jobs:
             path: __testFiles__/DirA/SubDirA/FileAA.md
           - name: Multiple
             path: __testFiles__/**
+          - name: Multiple2
+            path: |
+              __testFiles__/DirA
+              __testFiles__/DirB/**
       fail-fast: false
     name: ${{ matrix.config.name }} File Upload Test [${{ matrix.runs-on }}]
     runs-on: ${{ matrix.runs-on }}
