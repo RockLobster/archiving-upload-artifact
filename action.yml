@@ -1,7 +1,7 @@
 name: 'Archive and upload Build Artifacts'
 description: 'Archive build artifacts and upload them so that they can be used by subsequent workflow steps.'
 author: Rainer Schlönvoigt
-icon: arrow-up
+icon: 'arrow-up'
 inputs: 
   name:
     description: 'Artifact name'
