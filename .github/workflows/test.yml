@@ -75,6 +75,7 @@ jobs:
           fi
           ((PATH_COUNT++))
         done
+        echo "Done checking files."
 
         unzipped_file_count=$(find check/tmp -type f | wc -l)
         if [ ! "$unzipped_file_count" -eq "$PATH_COUNT" ]; then
