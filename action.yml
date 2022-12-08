@@ -33,7 +33,7 @@ runs:
         # It is possible to call this action multiple times.
         # Ideally we want to store the files from all the calls, not overwrite them.
         # Therefore, the archive can't have a fixed name.
-        #RANDOM_ELEMENT=$(cat /dev/urandom | env LC_ALL=C tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+        RANDOM_ELEMENT=$(cat /dev/urandom | env LC_ALL=C tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
         #ZIP_NAME="${RANDOM_ELEMENT}.rTmpArchive.zip"
 
         # echo "zip_name=$ZIP_NAME" >> $GITHUB_OUTPUT
