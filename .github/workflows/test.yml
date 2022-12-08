@@ -8,7 +8,7 @@ on:
       - '**.md'
 
 jobs:
-  test:
+  test-single-upload:
     strategy:
       matrix:
         runs-on: [ubuntu-latest, macos-latest]
@@ -91,3 +91,80 @@ jobs:
           echo "Encountered more files than expected; expected: [$PATH_COUNT], actual: [$unzipped_file_count]";
           exit 1
         fi
+
+  test-multiple-uploads-same-name:
+    name: Multiple Uploads Test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.5.0
+    - name: Upload 1
+      uses: ./
+      with:
+        name: multiple-uploads-same-name
+        path: __testFiles__/DirA/*
+        retention-days: 1
+    - name: Upload 2
+      uses: ./
+      with:
+        name: multiple-uploads-same-name
+        path: __testFiles__/DirB/*
+        retention-days: 1
+    - name: Download Archive
+      uses: actions/download-artifact@v3
+      with:
+        name: multiple-uploads-same-name
+        path: check
+    - name: Check Archive Exists
+      run: |
+        count=$(ls -1 *.rTmpArchive.zip 2>/dev/null | wc -l)
+        if [ $count != 2 ]; then
+          echo "Expected 2 archive files but got: [$count]!"
+          exit 1
+        fi
+      working-directory: check
+
+  test-multiple-uploads-different-name:
+    name: Multiple Uploads Test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.5.0
+    - name: Upload 1
+      uses: ./
+      with:
+        name: multiple-uploads-different-name-1
+        path: __testFiles__/DirA/*
+        retention-days: 1
+    - name: Upload 2
+      uses: ./
+      with:
+        name: multiple-uploads-different-name-2
+        path: __testFiles__/DirB/*
+        retention-days: 1
+    - name: Download Archive 1
+      uses: actions/download-artifact@v3
+      with:
+        name: multiple-uploads-different-name-1
+        path: check1
+    - name: Download Archive 2
+      uses: actions/download-artifact@v3
+      with:
+        name: multiple-uploads-different-name-2
+        path: check2
+    - name: Check Archive 1 Exists
+      run: |
+        count=$(ls -1 *.rTmpArchive.zip 2>/dev/null | wc -l)
+        if [ $count != 1 ]; then
+          echo "Missing archive file!"
+          exit 1
+        fi
+      working-directory: check1
+    - name: Check Archive 2 Exists
+      run: |
+        count=$(ls -1 *.rTmpArchive.zip 2>/dev/null | wc -l)
+        if [ $count != 1 ]; then
+          echo "Missing archive file!"
+          exit 1
+        fi
+      working-directory: check2
