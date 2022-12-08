@@ -8,17 +8,17 @@ on:
       - '**.md'
 
 jobs:
-  single-file-upload:
-    name: Single File Upload Test
+  test:
     strategy:
       matrix:
         runs-on: [ubuntu-latest, macos-latest]
         config:
-          - name: single
+          - name: Single
             path: __testFiles__/DirA/SubDirA/FileAA.md
-          - name: multiple
+          - name: Multiple
             path: __testFiles__/**
       fail-fast: false
+    name: ${{ matrix.config.name }} File Upload Test
     runs-on: ${{ matrix.runs-on }}
     steps:
     - name: Checkout
