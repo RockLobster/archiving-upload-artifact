@@ -22,7 +22,7 @@ jobs:
       uses: ./
       with:
         name: "Single-File-${{ matrix.runs-on }}"
-        path: DirA/SubDirA/FileAA.md
+        path: __testFiles__/DirA/SubDirA/FileAA.md
         retention-days: 1
     - name: Download Archive
       uses: actions/download-artifact@v3
