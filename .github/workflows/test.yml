@@ -23,30 +23,27 @@ jobs:
       with:
         name: Single-File-${{ matrix.runs-on }}
         path: DirA/SubDirA/FileAA.md
-  
-  single-file-check:
-    strategy:
-      matrix:
-        runs-on: [ubuntu-latest, macos-latest]
-      fail-fast: false
-    runs-on: ${{ matrix.runs-on }}
-    steps:
-      - name: Download Archive
-        uses: actions/download-artifact@v3
-        with:
-          name: Single-File-${{ matrix.runs-on }}
-      - name: Check Archive Exists
-        run: |
-          count=$(ls -1 *.rTmpArchive.zip 2>/dev/null | wc -l)
-          if [ $count != 1 ]
-            echo "Missing archive file!"
-            exit 1
-          fi
-      - name: Check Archive contents
-        run: |
-          unzip *.rTmpArchive.zip -d ./tmp
+    - name: Download Archive
+      uses: actions/download-artifact@v3
+      with:
+        name: Single-File-${{ matrix.runs-on }}
+        path: check
+    - name: Check Archive Exists
+      run: |
+        count=$(ls -1 *.rTmpArchive.zip 2>/dev/null | wc -l)
+        if [ $count != 1 ]
+          echo "Missing archive file!"
+          exit 1
+        fi
+      working-directory: check
+    - name: Check Archive contents
+      run: |
+        unzip *.rTmpArchive.zip -d ./tmp
 
-          if [ ! -f 'tmp/FileAA.md' ]; then
-            echo "Missing archive contents!"
-            exit 1
-          fi
+        if [ ! -f 'tmp/FileAA.md' ]; then
+          echo "Missing archive contents!"
+          exit 1
+        fi
+      working-directory: check
+
+     
