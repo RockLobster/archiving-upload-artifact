@@ -79,11 +79,12 @@ jobs:
             echo "Missing file in archive: $FULL_PATH"
             exit 1
           fi
-          PATH_COUNT=$PATH_COUNT+1
+          ((PATH_COUNT++)) || true
         done
         echo "Done checking files."
 
         unzipped_file_count=$(find check/tmp -type f | wc -l)
         if [ ! "$unzipped_file_count" -eq "$PATH_COUNT" ]; then
           echo "Encountered more files than expected; expected: [$PATH_COUNT], actual: [$unzipped_file_count]";
+          exit 1
         fi
