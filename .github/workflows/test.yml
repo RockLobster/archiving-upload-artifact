@@ -79,7 +79,7 @@ jobs:
             echo "Missing file in archive: $FULL_PATH"
             exit 1
           fi
-          ((++PATH_COUNT)) || true
+          PATH_COUNT="$((PATH_COUNT+1))"
         done
         echo "Done checking files."
 
