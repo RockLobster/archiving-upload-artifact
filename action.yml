@@ -25,11 +25,8 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Archive Build Artifacts
-      id: archive-artifacts
+    - id: generate-name
       run: |
-        #TODO: Check if files exist
-
         # It is possible to call this action multiple times.
         # Ideally we want to store the files from all the calls, not overwrite them.
         # Therefore, the archive can't have a fixed name.
@@ -37,17 +34,16 @@ runs:
         ZIP_NAME="${RANDOM_ELEMENT}.rTmpArchive.zip"
 
         echo "zip_name=$ZIP_NAME" >> $GITHUB_OUTPUT
-
-        ACTION_INPUT_PATHS="${{ inputs.path }}"
-        echo $ACTION_INPUT_PATHS | while IFS= read -r ACTION_INPUT_PATH
-        do
-          zip -r "$ZIP_NAME" $ACTION_INPUT_PATH
-        done
       shell: bash
+    - name: Archive Build Artifacts
+      uses: TheDoctor0/zip-release@0.6.2
+      with:
+        filename: ${{ steps.generate-name.outputs.zip_name }}
+        path: ${{ inputs.path }}
     - name: Upload Archive
       uses: actions/upload-artifact@v3
       with:
         name: ${{ inputs.name }}
         retention-days: ${{ inputs.retention-days }}
-        path: ${{ steps.archive-artifacts.outputs.zip_name }}
+        path: ${{ steps.generate-name.outputs.zip_name }}
         if-no-files-found: error
