@@ -36,13 +36,13 @@ runs:
         RANDOM_ELEMENT=$(cat /dev/urandom | env LC_ALL=C tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
         ZIP_NAME="${RANDOM_ELEMENT}.rTmpArchive.zip"
 
-        echo "zip_name=$ZIP_NAME" >> $GITHUB_OUTPUT
+        # echo "zip_name=$ZIP_NAME" >> $GITHUB_OUTPUT
 
-        ACTION_INPUT_PATHS="${{ inputs.path }}"
-        echo $ACTION_INPUT_PATHS | while IFS= read -r ACTION_INPUT_PATH
-        do
-          zip -r "$ZIP_NAME" $ACTION_INPUT_PATH
-        done
+        # ACTION_INPUT_PATHS="${{ inputs.path }}"
+        # echo $ACTION_INPUT_PATHS | while IFS= read -r ACTION_INPUT_PATH
+        # do
+        #   zip -r "$ZIP_NAME" $ACTION_INPUT_PATH
+        # done
       shell: bash
     - name: Upload Archive
       uses: actions/upload-artifact@v3
@@ -50,3 +50,4 @@ runs:
         name: ${{ inputs.name }}
         retention-days: ${{ inputs.retention-days }}
         path: ${{ steps.archive-artifacts.outputs.zip_name }}
+        if-no-files-found: error
