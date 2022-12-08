@@ -13,6 +13,11 @@ jobs:
     strategy:
       matrix:
         runs-on: [ubuntu-latest, macos-latest]
+        config:
+          - name: single
+            path: __testFiles__/DirA/SubDirA/FileAA.md
+          - name: multiple
+            path: __testFiles__/**
       fail-fast: false
     runs-on: ${{ matrix.runs-on }}
     steps:
@@ -21,20 +26,20 @@ jobs:
     - name: Upload
       uses: ./
       with:
-        name: single-file-${{ matrix.runs-on }}
-        path: __testFiles__/DirA/SubDirA/FileAA.md
+        name: ${{ matrix.config.name }}-${{ matrix.runs-on }}
+        path: ${{ matrix.config.path }}
         retention-days: 1
     - name: Upload Comparison
       uses: actions/upload-artifact@v3
       with:
-        name: comparison-single-${{ matrix.runs-on }}
+        name: comparison-${{ matrix.config.name }}-${{ matrix.runs-on }}
         retention-days: 1
-        path: __testFiles__/DirA/SubDirA/FileAA.md
+        path: ${{ matrix.config.path }}
         if-no-files-found: error
     - name: Download Archive
       uses: actions/download-artifact@v3
       with:
-        name: single-file-${{ matrix.runs-on }}
+        name: ${{ matrix.config.name }}-${{ matrix.runs-on }}
         path: check
     - name: Check Archive Exists
       run: |
@@ -47,54 +52,7 @@ jobs:
     - name: Download comparison
       uses: actions/download-artifact@v3
       with:
-        name: comparison-single-${{ matrix.runs-on }}
-        path: check/comparison
-    - name: Check Archive contents
-      run: |
-        unzip *.rTmpArchive.zip -d check/tmp
-
-        diff -r check/comparison check/tmp
-
-  multi-file-upload:
-    name: Multiple Files Upload Test
-    strategy:
-      matrix:
-        runs-on: [ubuntu-latest, macos-latest]
-      fail-fast: false
-    runs-on: ${{ matrix.runs-on }}
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Upload
-      uses: ./
-      with:
-        name: multiple-files-${{ matrix.runs-on }}
-        path: __testFiles__/**
-        retention-days: 1
-    - name: Upload Comparison
-      uses: actions/upload-artifact@v3
-      with:
-        name: comparison-multiple-${{ matrix.runs-on }}
-        retention-days: 1
-        path: __testFiles__/**
-        if-no-files-found: error
-    - name: Download Archive
-      uses: actions/download-artifact@v3
-      with:
-        name: multiple-files-${{ matrix.runs-on }}
-        path: check
-    - name: Check Archive Exists
-      run: |
-        count=$(ls -1 *.rTmpArchive.zip 2>/dev/null | wc -l)
-        if [ $count != 1 ]; then
-          echo "Missing archive file!"
-          exit 1
-        fi
-      working-directory: check
-    - name: Download comparison
-      uses: actions/download-artifact@v3
-      with:
-        name: comparison-multiple-${{ matrix.runs-on }}
+        name: comparison-${{ matrix.config.name }}-${{ matrix.runs-on }}
         path: check/comparison
     - name: Check Archive contents
       run: |
