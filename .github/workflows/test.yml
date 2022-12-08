@@ -66,7 +66,7 @@ jobs:
         
         PATH_COUNT=0
         
-        while IFS= read -r PATH
+        while read -r PATH
         do
           if [ -z "$PATH" ]; then
             continue
