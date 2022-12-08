@@ -15,23 +15,24 @@ jobs:
         config:
           - name: Single
             path: __testFiles__/DirA/SubDirA/FileAA.md
-            expanded_paths: __testFiles__/DirA/SubDirA/FileAA.md
+            expanded_paths: 
+              - __testFiles__/DirA/SubDirA/FileAA.md
           - name: Multiple
             path: __testFiles__/**
-            expanded_paths: |
-              __testFiles__/DirA/SubDirA/FileAA.md
-              __testFiles__/DirA/SubDirB/FileAB.md
-              __testFiles__/DirA/FileA.md
-              __testFiles__/DirB/FileB.md
-              __testFiles__/Foo
+            expanded_paths:
+              - __testFiles__/DirA/SubDirA/FileAA.md
+              - __testFiles__/DirA/SubDirB/FileAB.md
+              - __testFiles__/DirA/FileA.md
+              - __testFiles__/DirB/FileB.md
+              - __testFiles__/Foo
           - name: Multiple2
             path: |
               __testFiles__/DirA
               __testFiles__/DirB/**
-            expanded_paths: |
-              __testFiles__/DirA/SubDirA/FileAA.md
-              __testFiles__/DirA/SubDirB/FileAB.md
-              __testFiles__/DirA/FileA.md
+            expanded_paths:
+              - __testFiles__/DirA/SubDirA/FileAA.md
+              - __testFiles__/DirA/SubDirB/FileAB.md
+              - __testFiles__/DirA/FileA.md
 
       fail-fast: false
     name: ${{ matrix.config.name }} File Upload Test [${{ matrix.runs-on }}]
