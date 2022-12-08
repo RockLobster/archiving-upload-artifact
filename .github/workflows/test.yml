@@ -10,24 +10,20 @@ on:
 jobs:
   single-file-upload:
     name: Upload
-    strategy:
-      matrix:
-        runs-on: [ubuntu-latest, macos-latest]
-      fail-fast: false
-    runs-on: ${{ matrix.runs-on }}
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v2
     - name: Upload
       uses: ./
       with:
-        name: "Single-File-${{ matrix.runs-on }}"
+        name: "Single-File"
         path: DirA/SubDirA/FileAA.md
         retention-days: 1
     - name: Download Archive
       uses: actions/download-artifact@v3
       with:
-        name: "Single-File-${{ matrix.runs-on }}"
+        name: "Single-File"
         path: check
     - name: Check Archive Exists
       run: |
