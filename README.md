@@ -9,7 +9,7 @@ For comaprison:
 | Android APKs              | 6          | ~88MB      | 8s          |
 | Android Unit Test Results | 1192       | ~13MB      | 2m 25s      |
 
-This action attempts to reduce the upload time by putting all matched files into an archive before uploading.
+This action attempts to reduce the upload time by putting all matched files into a single archive before uploading.
 
 ## Inputs
 The inputs of the action mirror [actions/upload-artifact](https://github.com/marketplace/actions/upload-a-build-artifact) except for path stripping:
@@ -28,7 +28,7 @@ To replicate the same behavior with this action, make sure to set the `directory
 ## Example
 ```yaml
 - name: Archive and upload Build Artifacts
-  uses: RockLobster/archiving-upload-artifact@v0.1.0
+  uses: RockLobster/archiving-upload-artifact@v0.2.1
   with:
     name: android-test-results
     directory: android/libs
