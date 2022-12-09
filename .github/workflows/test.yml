@@ -14,25 +14,28 @@ jobs:
         runs-on: [ubuntu-latest, macos-latest]
         config:
           - name: Single
-            path: __testFiles__/DirA/SubDirA/FileAA.md
-            expanded_paths: __testFiles__/DirA/SubDirA/FileAA.md
+            directory: __testFiles__/DirA/SubDirA
+            path: FileAA.md
+            expanded_paths: FileAA.md
           - name: Multiple
-            path: __testFiles__/**
+            directory: __testFiles__
+            path: '**'
             expanded_paths: |
-              __testFiles__/DirA/SubDirA/FileAA.md
-              __testFiles__/DirA/SubDirB/FileAB.md
-              __testFiles__/DirA/FileA.md
-              __testFiles__/DirB/FileB.md
-              __testFiles__/Foo
+              DirA/SubDirA/FileAA.md
+              DirA/SubDirB/FileAB.md
+              DirA/FileA.md
+              DirB/FileB.md
+              Foo
           - name: Multiple2
+            directory: __testFiles__
             path: |
-              __testFiles__/DirA
-              __testFiles__/DirB/**
+              DirA
+              DirB/**
             expanded_paths: |
-              __testFiles__/DirA/SubDirA/FileAA.md
-              __testFiles__/DirA/SubDirB/FileAB.md
-              __testFiles__/DirA/FileA.md
-              __testFiles__/DirB/FileB.md
+              DirA/SubDirA/FileAA.md
+              DirA/SubDirB/FileAB.md
+              DirA/FileA.md
+              DirB/FileB.md
 
       fail-fast: false
     name: ${{ matrix.config.name }} File Upload Test [${{ matrix.runs-on }}]
@@ -43,6 +46,7 @@ jobs:
     - name: Upload
       uses: ./
       with:
+        directory: ${{ matrix.config.directory }}
         name: ${{ matrix.config.name }}-${{ matrix.runs-on }}
         path: ${{ matrix.config.path }}
         retention-days: 1
@@ -61,7 +65,7 @@ jobs:
       working-directory: check
     - name: Check Archive contents
       run: |
-        unzip *.rTmpArchive.zip -d check/tmp
+        unzip *.rTmpArchive.zip -d unpacked
 
         EXPANDED_PATHS="${{ matrix.config.expanded_paths }}"
         
@@ -73,7 +77,7 @@ jobs:
             continue
           fi
 
-          FULL_PATH=check/tmp/$EXPANDED_PATH
+          FULL_PATH=unpacked/$EXPANDED_PATH
           echo "Checking if file exists: $FULL_PATH"
           if [ -f "$FULL_PATH" ]; then
             echo "File exists."
@@ -86,11 +90,12 @@ jobs:
 
         echo "Done checking files."
 
-        unzipped_file_count=$(find check/tmp -type f | wc -l)
+        unzipped_file_count=$(find unpacked -type f | wc -l)
         if [ ! "$unzipped_file_count" -eq "$PATH_COUNT" ]; then
           echo "Encountered more files than expected; expected: [$PATH_COUNT], actual: [$unzipped_file_count]";
           exit 1
         fi
+      working-directory: check
 
   test-multiple-uploads-same-name:
     name: Multiple Uploads With The Same Name
