@@ -11,6 +11,8 @@ For comaprison:
 
 This action attempts to reduce the upload time by putting all matched files into a single archive before uploading.
 
+To be used in combination with [unarchiving-download-artifact](https://github.com/marketplace/actions/download-and-unarchive-a-build-artifact) instead of [download-artifact](https://github.com/marketplace/actions/download-a-build-artifact).
+
 ## Inputs
 The inputs of the action mirror [actions/upload-artifact](https://github.com/marketplace/actions/upload-a-build-artifact) except for path stripping:
 
