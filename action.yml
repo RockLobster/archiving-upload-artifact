@@ -10,8 +10,11 @@ inputs:
   name:
     description: 'Artifact name'
     default: 'artifact'
+  directory:
+    description: 'The base directory '
+    default: '.'
   path:
-    description: 'A file, directory or wildcard pattern that describes what to upload'
+    description: 'A file, directory or wildcard pattern that describes what to upload. These must be relative to the `directory` input parameter.'
     required: true
   if-no-files-found:
     description: >
@@ -44,11 +47,12 @@ runs:
       uses: TheDoctor0/zip-release@0.6.2
       with:
         filename: ${{ steps.generate-name.outputs.zip_name }}
+        directory: ${{ inputs.directory }}
         path: ${{ inputs.path }}
     - name: Upload Archive
       uses: actions/upload-artifact@v3
       with:
         name: ${{ inputs.name }}
         retention-days: ${{ inputs.retention-days }}
-        path: ${{ steps.generate-name.outputs.zip_name }}
+        path: ${{ inputs.directory }}/${{ steps.generate-name.outputs.zip_name }}
         if-no-files-found: error
