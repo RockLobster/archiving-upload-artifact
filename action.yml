@@ -48,6 +48,7 @@ runs:
         retention-days: ${{ inputs.retention-days }}
         path: ${{ inputs.directory }}/${{ steps.generate-name.outputs.zip_name }}
         if-no-files-found: error
+        overwrite: true
     - name: Clean up
       if: always()
       run: rm ${{ inputs.directory }}/${{ steps.generate-name.outputs.zip_name }}
